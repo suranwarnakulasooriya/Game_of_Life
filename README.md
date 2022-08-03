@@ -2,7 +2,7 @@
 A Python application that allows users to create a configuration of cells and run the Game of Life simulation.
 
 ## Dependencies
-Pygame is the only dependency for this project.
+Pygame is the only dependency for this project. To install it, do:
 ```
 pip install pygame
 ```
