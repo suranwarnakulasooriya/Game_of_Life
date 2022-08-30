@@ -133,10 +133,9 @@ def optimize(grid,lc):
 
 # draw grid on screen
 def draw_grid(grid,w,h,p):
-    for r in range(h):
-        for c in range(w):
-            if evolve and grid[r][c] == 1: pygame.draw.rect(screen, ('#c678dd'), (c*p,r*p,p,p))
-            elif grid[r][c] == 1: pygame.draw.rect(screen, ('#e5c07b'), (c*p,r*p,p,p))
+    for (r,c) in live_cells:
+        if evolve: pygame.draw.rect(screen, ('#c678dd'), (c*p,r*p,p,p))
+        else: pygame.draw.rect(screen, ('#e5c07b'), (c*p,r*p,p,p))
 
 # draw gridlines if permitted
 def draw_lines(w,h):
