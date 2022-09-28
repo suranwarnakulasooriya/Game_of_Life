@@ -74,7 +74,7 @@ def find_NW(grid,r,c,get=False):
     R = r-1; C = c-1
     if r == 0: R = h-1
     if c == 0: C = w-1
-    if get: return (r,c)
+    if get: return (R,C)
     return grid[R][C]
 
 # find southeast neighbor
