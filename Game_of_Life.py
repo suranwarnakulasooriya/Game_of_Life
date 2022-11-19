@@ -124,7 +124,7 @@ def optimize(grid,lc):
     for r,c in C:
         N = live_neighbors(grid,(r,c)) # L is the number of live neighbors
         if grid[r][c] == 0: # if the current cell is dead...
-            if N == 3: # come to life in condition met
+            if N == 3: # come to life if condition met
                 newgrid[r][c] = 1; l.append((r,c))
         elif grid[r][c] == 1: # if the current cell is alive...
             if 2 <= N <= 3: # stay alive if condidion met
