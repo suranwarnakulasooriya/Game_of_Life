@@ -100,15 +100,11 @@ def find_SW(grid,r,c,get=False):
 
 # return number of live neighbors of a cell
 def live_neighbors(grid,pos):
-    count = 0
-    for neighbor in neighbors: count += neighbor(grid,pos[0],pos[1])
-    return count
+    return sum([neighbor(grid,pos[0],pos[1]) for neighbor in neighbors])
 
 # return list of neighbors
 def get_neighbors(grid,pos):
-    l = [pos]
-    for neighbor in neighbors: l.append(neighbor(grid,pos[0],pos[1],get=True))
-    return l
+    return [neighbor(grid,pos[0],pos[1],get=True) for neighbor in neighbors]
 
 # return an empty wxh grid
 def empty_grid(w,h):
@@ -120,14 +116,12 @@ def optimize(grid,lc):
     C = [] # list of cells to check is the live cells and their neighbors
     for r,c in lc: C += get_neighbors(grid,(r,c))
     C = list(set(C)) # remove repeats
-    l = [] # new list of live neighbors
+    l = [] # new list of live cells
     for r,c in C:
         N = live_neighbors(grid,(r,c)) # L is the number of live neighbors
-        if grid[r][c] == 0: # if the current cell is dead...
-            if N == 3: # come to life if condition met
+        if grid[r][c] == 0 and N == 3: # come to life 
                 newgrid[r][c] = 1; l.append((r,c))
-        elif grid[r][c] == 1: # if the current cell is alive...
-            if 2 <= N <= 3: # stay alive if condidion met
+        elif grid[r][c] == 1 and 2 <= N <= 3: # stay alive
                 newgrid[r][c] = 1; l.append((r,c))
     return newgrid, l
 
@@ -149,8 +143,8 @@ def draw_lines(w,h):
 # ============================================================================================================
 # CONFIGURABLE VARIABLES
 
-p = 20 # cell size in pixels
-w = 100; h = 100 # width and height of grid in cells
+p = 10 # cell size in pixels
+w = 80; h = 80 # width and height of grid in cells
 gridlines = False # whether gridlines appear at the start or not, gridlines affect framerate considerably
 
 # ============================================================================================================
@@ -171,7 +165,7 @@ pygame.init(); screen = pygame.display.set_mode((sw,sh))
 # ============================================================================================================
 # EVENT LOOP
 
-while run:
+while run and __name__ == "__main__":
     if evolve: mode = f'Generation {generation}'
     else: mode = 'Editor'
 
@@ -181,7 +175,7 @@ while run:
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_ESCAPE]: run = False
-    if keys[pygame.K_l]: pygame.time.delay(30); gridlines = not gridlines 
+    if keys[pygame.K_l]: pygame.time.delay(30); gridlines ^= 1
 
     screen.fill('#282c34')
     draw_grid(grid,w,h,p)
@@ -202,7 +196,7 @@ while run:
             r, c = pos[1]//p, pos[0]//p
             grid[r][c] ^= 1 # bitwise xor with 1 to toggle between 1 and 0
             # update list of live cells
-            if grid[r][c] == 1: live_cells.append((r,c))
+            if grid[r][c]: live_cells.append((r,c))
             else: live_cells.remove((r,c))
 
     pygame.display.set_caption(f"Conway's Game of Life - {mode}")
