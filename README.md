@@ -10,8 +10,9 @@ pip install pygame
 ## Usage
 The program defaults to a 100x100 grid of cells each wth a size of 20x20 pixels. If this configuration is not optimal for you, you can change these values in the following lines:
 ```
-153 p = 20 # cell size in pixels
-154 w = 100; h = 100 # width and height of grid in cells
+156 p = 20 # cell size in pixels
+157 w = 100; h = 100 # width and height of grid in cells
+158 target_fps = 30
 ```
 
 All cells start dead. Click on cells to toggle them between alive and dead. When you are done with your configuration, press space to run the Game of Life on it. Press space again to return to the configuration editor. You can toggle the lines on the grid with the L key. These lines lower the framerate considerably.
