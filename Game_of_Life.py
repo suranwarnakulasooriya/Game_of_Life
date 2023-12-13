@@ -153,8 +153,8 @@ def draw_lines(w,h):
 # =============================================================================================================
 # CONFIGURABLE VARIABLES
 
-p = 20 # cell size in pixels
-w = 100; h = 100 # width and height of grid in cells
+p = 5 # cell size in pixels
+w = 150; h = 150 # width and height of grid in cells
 target_fps = 30
 gridlines = False # whether gridlines appear at the start or not, gridlines affect framerate considerably
 
