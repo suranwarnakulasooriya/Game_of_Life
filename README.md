@@ -1,22 +1,20 @@
 # Conway's Game of Life
-A Python application that allows users to create a configuration of cells and run the Game of Life simulation.
+A Python application that allows users to create a configuration of cells and run the Game of Life simulation in the terminal.
 
 ## Dependencies
-Pygame is the only dependency for this project. To install it, do:
+Curses is the only dependency for this project, to install it, do:
 ```
-pip install pygame
+pip install curses
 ```
 
 ## Usage
-The program defaults to a 100x100 grid of cells each wth a size of 20x20 pixels. If this configuration is not optimal for you, you can change these values in the following lines:
-```
-156 p = 20 # cell size in pixels
-157 w = 100; h = 100 # width and height of grid in cells
-158 target_fps = 30
-```
+The simulation automatically sets the grid dimensions to those of the terminal window, with a minimum of 20x20. Resize the window to change the size of the grid.
 
-All cells start dead. Click on cells to toggle them between alive and dead. When you are done with your configuration, press space to run the Game of Life on it. Press space again to return to the configuration editor. You can toggle the lines on the grid with the L key. These lines lower the framerate considerably.
+## Controls
+|Key|Action|
+|---|------|
+|q|exit|
+|r|generate random noise|
+|space|toggle between editor and live simulation|
 
 The PDF in this repository explains the origins and logic of the Game of Life along with some patterns you can try out.
-
-![rpentomino](https://user-images.githubusercontent.com/68828123/184267000-82d710b6-d336-41ef-846d-c867074dd2f4.gif)
