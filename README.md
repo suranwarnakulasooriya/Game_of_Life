@@ -15,6 +15,7 @@ The simulation automatically sets the grid dimensions to those of the terminal w
 |---|------|
 |q|exit|
 |r|generate random noise|
+|click|toggle cell alive/dead|
 |space|toggle between editor and live simulation|
 
 The PDF in this repository explains the origins and logic of the Game of Life along with some patterns you can try out.
