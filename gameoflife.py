@@ -4,6 +4,7 @@ from datetime import datetime # to manage frame rate
 from time import sleep #        ^
 from random import randint # to create random noise
 import curses # i/o
+import argparse # to parse args
 
 # RULES FOR CONWAY'S GAME OF LIFE =====================================================================================
 
@@ -17,78 +18,12 @@ import curses # i/o
 # deaths and births happen simultaneously
 # live cells are marked with 1, dead cells are marked with 0
 
-# NEIGHBORS ===========================================================================================================
-
-# each function returns the neighbor of a specified cell in a certain direction, loops around edges
-# the 'get' specifier tells the function to return the coords of the neighbor instead of its value
-
-# find north neighbor
-def find_N(grid:list[list[int]],r:int,c:int,get:bool=False):
-    R = r-1
-    if r == 0: R = h-1
-    if get: return (R,c)
-    return grid[R][c]
-
-# find south neighbor
-def find_S(grid:list[list[int]],r:int,c:int,get:bool=False):
-    R = r+1
-    if r == h-1: R = 0
-    if get: return (R,c)
-    return grid[R][c]
-
-# find east neighbor
-def find_E(grid:list[list[int]],r:int,c:int,get:bool=False):
-    C = c+1
-    if c == w-1: C = 0
-    if get: return (r,C)
-    return grid[r][C]
-
-# find west neighbor
-def find_W(grid:list[list[int]],r:int,c:int,get:bool=False):
-    C = c-1
-    if c == 0: C = w-1
-    if get: return (r,C)
-    return grid[r][C]
-
-# find northeast neighbor
-def find_NE(grid:list[list[int]],r:int,c:int,get:bool=False):
-    R = r-1; C = c+1
-    if r == 0: R = h-1
-    if c == w-1: C = 0
-    if get: return (R,C)
-    return grid[R][C]
-
-# find northwest neighbor
-def find_NW(grid:list[list[int]],r:int,c:int,get:bool=False):
-    R = r-1; C = c-1
-    if r == 0: R = h-1
-    if c == 0: C = w-1
-    if get: return (R,C)
-    return grid[R][C]
-
-# find southeast neighbor
-def find_SE(grid:list[list[int]],r:int,c:int,get:bool=False):
-    R = r+1; C = c+1
-    if r == h-1: R = 0
-    if c == w-1: C = 0
-    if get: return (R,C)
-    return grid[R][C]
-
-# find southwest neighbor
-def find_SW(grid:list[list[int]],r:int,c:int,get:bool=False):
-    R = r+1; C = c-1
-    if r == h-1: R = 0
-    if c == 0: C = w-1
-    if get: return (R,C)
-    return grid[R][C]
-
 # SIMULATION LOGIC ====================================================================================================
 
-def live_neighbors(grid:list[list[int]],pos:(int,int)) -> int: # return number of live neighbors of a cell
-    return sum([neighbor(grid,pos[0],pos[1]) for neighbor in neighbors])
-
 def get_neighbors(grid:list[list[int]],pos:(int,int)) -> list[(int,int)]: # return list of neighbor coords
-    return [neighbor(grid,pos[0],pos[1],get=True) for neighbor in neighbors]
+    r, c = pos
+    return [(r,(c-1)%w), (r,(c+1)%w), ((r+1)%h,(c-1)%w), ((r+1)%h,(c+1)%w),
+            ((r-1)%h,(c-1)%w), ((r-1)%h,(c+1)%w), ((r+1)%h,c), ((r-1)%h,c)]
 
 # return a random wxh grid
 def random_grid(w:int,h:int) -> (list[list[int]],list[int]):
@@ -108,7 +43,7 @@ def next_gen(grid:list[list[int]],lc:list[(int,int)]) -> (list[list[int]],list[(
     C = list(set(C)) # remove repeats
     l = [] # new list of live cells starts empty
     for r,c in C:
-        N = live_neighbors(grid,(r,c)) # number of live neighbors for the given cell
+        N = sum(grid[neighbor[0]][neighbor[1]] for neighbor in get_neighbors(grid,(r,c)))
         if grid[r][c] == 0 and N == 3: # come to life if condition met
                 newgrid[r][c] = 1; l.append((r,c))
         elif grid[r][c] == 1 and 2 <= N <= 3: # stay alive if condition met
@@ -127,14 +62,18 @@ def close() -> None: stdscr.erase(); stdscr.keypad(0); curses.nocbreak(); curses
 
 # SETUP ===============================================================================================================
 
-neighbors = [find_N, find_S, find_E, find_W, find_NE, find_NW, find_SE, find_SW] # all neighbors
-target_frametime = 1/60 # target time per frame in seconds (1/frame rate)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(prog='GameOfLife',
+        description="A terminal-based interaction simulation of Conway's Game of Life.")
+    parser.add_argument('-fps','--framerate',type=int,default=60,help='target frame rate')
+    args = parser.parse_args(); target_fps = max(1,min(300,args.framerate)) # parse frame rate
+    target_frametime = 1/target_fps # target time per frame in seconds (1/frame rate)
+    
+    stdscr = curses.initscr(); curses.noecho(); stdscr.nodelay(True) # init screen, no echo, make getch() nonblocking
+    stdscr.keypad(True); curses.mousemask(True); curses.curs_set(0) # accept keyboard and mouse input, hide curser
 
-stdscr = curses.initscr(); curses.noecho(); stdscr.nodelay(True) # init screen, no echo, make getch() nonblocking
-stdscr.keypad(True); curses.mousemask(True); curses.curs_set(0) # accept keyboard and mouse input, hide curser
-
-f,w,h = init_dimens(stdscr) # get screen dimensions
-grid,live_cells,generation = reset(w,h) # start with empty grid with no live cells, editor mode, gen 0
+    f,w,h = init_dimens(stdscr) # get screen dimensions
+    grid,live_cells,generation = reset(w,h) # start with empty grid with no live cells, editor mode, gen 0
 
 # EVENT LOOP ==========================================================================================================
 
